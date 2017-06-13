@@ -1,0 +1,61 @@
+---
+extends: airbnb/base
+
+parser: babel-eslint
+
+env:
+  node: true
+  browser: true
+
+globals:
+  fetch: true,
+  window: true
+  document: true
+  $: true
+
+# ecmaFeatures:
+#   generators: true
+#   experimentalObjectRestSpread: true
+
+rules:
+  # strict
+  strict: [2, global]
+  no-unused-expressions: 0
+
+  no-restricted-syntax: 0
+
+  dot-location: [2, property]
+  no-param-reassign: [1, { "props": false }]
+  object-curly-spacing: 0
+  quote-props: 0
+
+  max-len: [2, 120, 2, {'ignoreUrls': true, 'ignoreComments': true}]
+  linebreak-style: [0, windows]
+
+  # 避免使用匿名函数
+  func-names: 0
+  # 需要回调函数的地方使用箭头函数
+  prefer-arrow-callback: 0
+  no-restricted-properties: 1
+  no-redeclare: 1
+  # 使用===或!==
+  eqeqeq: 1
+  # 不使用 + 连接字符串
+  no-useless-concat: 1
+
+  # errors
+  comma-dangle: [2, never]
+  no-empty: 0
+
+  # variables
+  no-unused-vars: [2, args: none]
+
+  # 允许函数后置
+  no-use-before-define: [2, { functions: false, classes: false }]
+
+  # style
+  eol-last: 0
+
+  space-before-function-paren: [2, never]
+
+  no-else-return: 0

@@ -1,0 +1,24 @@
+{
+  "presets": [
+    "es2015",
+    "stage-1"
+  ],
+  "env": {
+    "production": {
+      "presets": [
+        "babili"
+      ]
+    }
+  },
+  "plugins":[
+    "transform-async-to-generator",
+    "transform-decorators-legacy",
+    "transform-es2015-destructuring",
+    "transform-es2015-for-of",
+    "transform-es2015-modules-commonjs",
+    "transform-es2015-parameters",
+    "transform-es2015-spread",
+    "transform-es2015-arrow-functions",
+    "transform-object-assign"
+  ]
+}
