@@ -1,6 +1,6 @@
-/* eslint no-console: 0*/
-/* eslint no-unused-expressions: 0*/
-/* eslint no-underscore-dangle: 0*/
+/* eslint no-console: */
+/* eslint no-unused-expressions: */
+/* eslint no-underscore-dangle: */
 ((root, doc) => {
   class Loader {
     constructor(opts) {
@@ -49,7 +49,6 @@
         }
       }
       const ver = this.dateStep();
-      console.log(ver);
       arr.push((`v=${ver}`));
       return arr.join('&');
     }
