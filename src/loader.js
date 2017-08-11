@@ -8,7 +8,7 @@
         cacheKey: `${root.location.hostname}__LOADER_PATH__`,
         mapPath: '',
         mapKeys: null,
-        accuracy: 1, // sdk更新的精度，0:秒级别，1:分钟级别，2: 小时级别，3, 天级别，4：月级别
+        accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
         async: false,
         retryTimes: 2
       };
@@ -48,14 +48,32 @@
           arr.push(`${encodeURIComponent(name)}=${encodeURIComponent(data[name])}`);
         }
       }
-      arr.push((`v=${this.dateStep()}`).replace('.', ''));
+      const ver = this.dateStep();
+      console.log(ver);
+      arr.push((`v=${ver}`));
       return arr.join('&');
     }
 
     dateStep = () => {
-      const timeArr = new Date().toLocaleString().replace(/:| /g, '-').split('-');
-      const length = timeArr.length;
-      return timeArr.slice(0, length - Math.min(4, this.options.accuracy)).join('');
+      let step;
+      switch (this.options.accuracy) {
+        case 1: // 分钟
+          step = 60;
+          break;
+        case 2: // 小时
+          step = 60 * 60;
+          break;
+        case 3: // 天
+          step = 60 * 60 * 24;
+          break;
+        case 4: // 周
+          step = 60 * 60 * 24 * 7;
+          break;
+        default:
+          step = 10;
+          break;
+      }
+      return Math.floor(Date.parse(new Date()) / 1000 / step);
     }
 
     insertAfter = (newElement, targetElement) => {
@@ -86,9 +104,9 @@
         that.insertAfter(script, head.lastChild);
         script.addEventListener('error', (e) => {
           that.removeFilePaths();
-          if (this.options.retryTimes > 0) {
+          if (that.options.retryTimes > 0) {
             that.run();
-            this.options.retryTimes += -1;
+            that.options.retryTimes += -1;
           } else {
             throw new Error(`${e.target.src} no found!`);
           }

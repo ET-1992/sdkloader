@@ -4,8 +4,9 @@ const path = require('path');
 const curDir = __dirname;
 module.exports = {
   entry: {
-    loader: './src/loader.js',
-    sdkloader: './src/sdkloader.js'
+    'loader': './src/loader.js',
+    'sdkloader': './src/sdkloader.js',
+    'sdkloader_pp': './src/sdkloader_pp.js'
   },
   output: {
     path: path.join(curDir, 'lib'),
