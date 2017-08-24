@@ -6,7 +6,8 @@ module.exports = {
   entry: {
     'loader': './src/loader.js',
     'sdkloader': './src/sdkloader.js',
-    'sdkloader_pp': './src/sdkloader_pp.js'
+    'sdkloader_pp': './src/sdkloader_pp.js',
+    'sdkload_comment_detail': './src/sdkload_comment_detail.js'
   },
   output: {
     path: path.join(curDir, 'lib'),
