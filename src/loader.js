@@ -5,7 +5,7 @@
   class Loader {
     constructor(opts) {
       this.options = {
-        cacheKey: `${root.location.hostname}__LOADER_PATH__`,
+        cacheKey: `${root.location.hostname}_${opts.mapPath.match(/\w*.json/)[0]}__LOADER_PATH__`,
         mapPath: '',
         mapKeys: null,
         accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
