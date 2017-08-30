@@ -8,10 +8,11 @@
       this.loaderStatus = !!root[`${opts.cachePrefix}__STATUS__`];
       this.options = {
         mapPath: '',
-        mapKeys: null,
+        // mapKeys: null,
         accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
+        retryTimes: 2,
         async: false,
-        retryTimes: 2
+        canReload: true // 允许加载相同的sdk
       };
       Object.assign(this.options, opts);
     }
@@ -95,8 +96,10 @@
       const that = this;
       let count = 0;
       const _loadScript = (url = urls[count]) => {
+        that.removeLoadedScript(url);
         const head = doc.head;
         const script = doc.createElement('script');
+        script.id = url;
         script.async = false;
         script.type = 'text/javascript';
         script.charset = 'utf-8';
@@ -122,6 +125,11 @@
         }, false);
       };
       _loadScript();
+    }
+
+    removeLoadedScript = (name) => {
+      const script = document.getElementById(name);
+      if (script && script.remove) script.remove();
     }
 
     updateFilePath = (callback) => {
@@ -161,7 +169,7 @@
       const options = that.options;
       const async = options.async;
 
-      if (this.loaderStatus) {
+      if (this.loaderStatus && !options.canReload) {
         options.callback();
         return;
       }
