@@ -1,19 +1,15 @@
 {
-  "name": "@ali/sdkLoader",
-  "description": "A post-update loader",
-  "version": "0.1.0",
-  "private": true,
-  "author": {
-    "name": "jingui.pjg",
-    "email": "jingui.pjg@alibaba-inc.com"
-  },
-  "main": "lib/loader.js",
+  "name": "@ali/sdkloader",
+  "description": "A loader for js-sdk file",
+  "version": "0.0.1",
+  "author": "jingui.pjg <jingui.pjg@alibaba-inc.com>",
+  "main": "lib/loader.min.js",
   "scripts": {
     "clean": "rm -r lib || true",
     "lint": "eslint src",
     "dev": "webpack-dev-server --config webpack.config.js --watch",
     "build": "webpack --config webpack.publish.js",
-    "publish": "npm run clean; npm run lint; npm run build"
+    "prepublish": "npm run clean && npm run build"
   },
   "devDependencies": {
     "autod": "^2.8.0",
@@ -44,5 +40,18 @@
     "babel-loader": "~7.0.0",
     "eslint-loader": "~1.7.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "example": "example"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.alibaba-inc.com:lego-team/sdkloader.git"
+  },
+  "keywords": [
+    "sdkloader"
+  ],
+  "publishConfig": {
+    "registry": "http://registry.npm.alibaba-inc.com"
+  }
 }
