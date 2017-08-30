@@ -4,8 +4,9 @@
 ((root, doc) => {
   class Loader {
     constructor(opts) {
+      this.loaderPath = `${opts.cachePrefix}__LOADER_PATH__`;
+      this.loaderStatus = !!root[`${opts.cachePrefix}__STATUS__`];
       this.options = {
-        cacheKey: `${root.location.hostname}_${opts.mapPath.match(/\w*.json/)[0]}__LOADER_PATH__`,
         mapPath: '',
         mapKeys: null,
         accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
@@ -15,13 +16,13 @@
       Object.assign(this.options, opts);
     }
     getFilePaths() {
-      return getLocalStorageItem(this.options.cacheKey);
+      return getLocalStorageItem(this.loaderPath);
     }
     saveFilePaths(val) {
-      setLocalStorageItem(this.options.cacheKey, val);
+      setLocalStorageItem(this.loaderPath, val);
     }
     removeFilePaths() {
-      localStorage.removeItem(this.options.cacheKey);
+      localStorage.removeItem(this.loaderPath);
     }
     ajax = (opts) => {
       const options = opts || {};
@@ -104,6 +105,7 @@
         script.addEventListener('error', (e) => {
           that.removeFilePaths();
           if (that.options.retryTimes > 0) {
+            that.updateLoaderStatus(false);
             that.run();
             that.options.retryTimes += -1;
           } else {
@@ -148,10 +150,22 @@
         }
       });
     }
-    run = () => {
+
+    updateLoaderStatus(status = true) {
+      root[`${this.options.cachePrefix}__STATUS__`] = status;
+      this.loaderStatus = status;
+    }
+
+    run = (callback) => {
       const that = this;
       const options = that.options;
       const async = options.async;
+
+      if (this.loaderStatus) {
+        options.callback();
+        return;
+      }
+      that.updateLoaderStatus();
       const oldUrls = that.getFilePaths();
       if (!async && oldUrls) {
         that.loadScripts(oldUrls, () => {
@@ -169,14 +183,15 @@
     }
   }
 
+
   root.sdkLoader = (opts = {}, callback = () => {}) => {
-    // throw new Error('Failed to setting "mapPath"...');
     if (!opts.mapPath) {
       throw new Error('Failed to setting "mapPath"...');
-    } else {
-      opts.callback = callback;
-      new Loader(opts).run();
     }
+
+    opts.cachePrefix = `${root.location.hostname}_${opts.mapPath.match(/\w*.json/)[0]}`;
+    opts.callback = callback;
+    new Loader(opts).run();
   };
 
   /**
