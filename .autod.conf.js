@@ -3,7 +3,8 @@ module.exports = {
   prefix: '~',
   devprefix: '^',
   exclude: [
-    'lib',
+    './lib',
+    './webpack.*.js'
   ],
   dep: [
     'babel-core',

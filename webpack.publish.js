@@ -21,5 +21,7 @@ function getPlugins() {
 webpackConfig.output.filename = '[name].min.js';
 webpackConfig.plugins = webpackConfig.plugins.concat(getPlugins());
 webpackConfig.devtool = 'nosources-source-map';
+webpackConfig.devServer = false;
+
 
 module.exports = webpackConfig;

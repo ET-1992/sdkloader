@@ -1,5 +1,5 @@
 {
-  "name": "sdkLoader",
+  "name": "@ali/sdkLoader",
   "description": "A post-update loader",
   "version": "0.1.0",
   "private": true,
@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -r lib || true",
     "lint": "eslint src",
-    "dev": "webpack --config webpack.config.js --watch",
+    "dev": "webpack-dev-server --config webpack.config.js --watch",
     "build": "webpack --config webpack.publish.js",
     "publish": "npm run clean; npm run lint; npm run build"
   },
@@ -36,13 +36,13 @@
     "eslint": "^4.0.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",
-    "webpack-dev-server": "^1.16.2"
+    "webpack-dev-server": "^1.16.2",
+    "webpack": "~2.6.1"
   },
   "dependencies": {
     "babel-core": "~6.25.0",
     "babel-loader": "~7.0.0",
-    "eslint-loader": "~1.7.1",
-    "webpack": "~2.6.1"
+    "eslint-loader": "~1.7.1"
   },
   "license": "MIT"
 }
