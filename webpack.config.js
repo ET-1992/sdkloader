@@ -5,7 +5,8 @@ const curDir = __dirname;
 module.exports = {
   entry: {
     'loader': './src/loader.js',
-    'sdkloader': './src/sdkloader.js'
+    'sdkloader': './src/sdkloader.js',
+    'detailsdkloader': './src/sdkload_comment_detail.js'
   },
   output: {
     path: path.join(curDir, 'lib'),
