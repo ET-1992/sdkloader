@@ -9,7 +9,7 @@
       this.options = {
         mapPath: '',
         // mapKeys: null,
-        accuracy: 0, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
+        accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
         retryTimes: 2,
         async: false,
         canReload: true // 允许加载相同的sdk

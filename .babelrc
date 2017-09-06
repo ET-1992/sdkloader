@@ -3,13 +3,6 @@
     "es2015",
     "stage-1"
   ],
-  "env": {
-    "production": {
-      "presets": [
-        "babili"
-      ]
-    }
-  },
   "plugins":[
     "transform-async-to-generator",
     "transform-decorators-legacy",

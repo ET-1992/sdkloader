@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <base href="//image.uc.cn/s/uae/g/1y/">
-  <link rel="dns-prefetch" href="//image.uc.cn">
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="Cache-Control" content="no-cache">
@@ -17,7 +15,22 @@
   </style>
 </head>
 <body>
-  <script type="text/javascript" src="//image.uc.cn/s/uae/g/1y/libs/uc-jsdk.js"></script>
-  <script type="text/javascript" src="//localhost:9090/sdkloader.js"></script>
+  <div class="content">这里是搜索区域...</div>
+  <script type="text/javascript">
+    (function(){
+      // 信息流的页面容器ID名
+      // var __UCIFLOW__ = window.__UCIFLOW__ = '__UC_IFLOW_ROOT__';
+      // 接入的渠道配置
+      var __UCIFLOW_CONGIG__ = window.__UCIFLOW_CONGIG__ = {
+        app: 'uc-iflow', // 渠道名
+        zzd_from: 'uc-iflow', // 渠道来源
+        client_os: 'iflow-jssdk', // 接入系统标志，默认 iflow-jssdk
+        is_hide_top: 1, // 隐藏顶部logo工具条
+        is_hide_bottom: 1, // 隐藏底部Banner广告条
+        is_hide_ad: 1 // 隐藏全部UC导流广告
+      };
+    })();
+  </script>
+  <script type="text/javascript" src="//image.uc.cn/s/uae/g/1y/libs/sdkloader.min.js"></script>
 </body>
 </html>
