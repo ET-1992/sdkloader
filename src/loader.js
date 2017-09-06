@@ -4,8 +4,8 @@
 ((root, doc) => {
   class Loader {
     constructor(opts) {
-      this.loaderPath = `${opts.cachePrefix}__LOADER_PATH__`;
-      this.loaderStatus = !!root[`${opts.cachePrefix}__STATUS__`];
+      this.loaderPath = `${opts.cacheSuffix}__LOADER_PATH__`;
+      this.loaderStatus = !!root[`${opts.cacheSuffix}__STATUS__`];
       this.options = {
         mapPath: '',
         // mapKeys: null,
@@ -160,7 +160,7 @@
     }
 
     updateLoaderStatus(status = true) {
-      root[`${this.options.cachePrefix}__STATUS__`] = status;
+      root[`${this.options.cacheSuffix}__STATUS__`] = status;
       this.loaderStatus = status;
     }
 
@@ -196,9 +196,11 @@
     if (!opts.mapPath) {
       throw new Error('Failed to setting "mapPath"...');
     }
-
-    opts.cachePrefix = `${root.location.hostname}_${opts.mapPath.split('/').pop()}`;
-    console.log(opts.cachePrefix);
+    if (opts.cacheSuffix) {
+      opts.cacheSuffix = `${root.location.hostname}_${opts.cacheSuffix}`;
+    } else {
+      opts.cacheSuffix = `${root.location.hostname}_${opts.mapPath.split('/').pop()}`;
+    }
     opts.callback = callback;
     new Loader(opts).run();
   };

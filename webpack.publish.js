@@ -18,6 +18,11 @@ function getPlugins() {
     })
   ];
 }
+
+webpackConfig.entry =  {
+  'loader': './src/loader.js',
+}
+
 webpackConfig.output.filename = '[name].min.js';
 webpackConfig.plugins = webpackConfig.plugins.concat(getPlugins());
 webpackConfig.devtool = 'nosources-source-map';
