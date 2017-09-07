@@ -5,8 +5,7 @@ const curDir = __dirname;
 module.exports = {
   entry: {
     'loader': './src/loader.js',
-    'sdkloader': './src/sdkloader.js',
-    'detailsdkloader': './src/sdkload_comment_detail.js'
+    'sdkloader': './src/sdkloader_demo.js',
   },
   output: {
     path: path.join(curDir, 'lib'),
@@ -37,6 +36,7 @@ module.exports = {
     // })
   ],
   devServer: {
+    host: '100.84.248.189',
     contentBase: './',
     port: 9090
   }

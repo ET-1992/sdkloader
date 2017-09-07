@@ -32,7 +32,7 @@
       const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
-          const status = xhr.status;
+          const { status } = xhr;
           if (status >= 200 && status < 300 && options.success) {
             options.success(xhr.responseText, xhr.responseXML);
           } else if (options.fail) {
@@ -42,7 +42,7 @@
       };
       xhr.open('GET', `${options.url}?${params}`, true);
       xhr.send(null);
-    }
+    };
     formatParams = (data) => {
       const arr = [];
       for (const name in data) {
@@ -51,9 +51,9 @@
         }
       }
       const ver = this.dateStep();
-      arr.push((`v=${ver}`));
+      arr.push(`v=${ver}`);
       return arr.join('&');
-    }
+    };
 
     dateStep = () => {
       let step;
@@ -75,7 +75,7 @@
           break;
       }
       return Math.floor(Date.parse(new Date()) / 1000 / step);
-    }
+    };
 
     insertAfter = (newElement, targetElement) => {
       const parent = targetElement.parentNode;
@@ -84,7 +84,7 @@
       } else {
         parent.insertBefore(newElement, targetElement.nextSibling);
       }
-    }
+    };
 
     /**
      * 动态插入js文件
@@ -97,7 +97,7 @@
       let count = 0;
       const _loadScript = (url = urls[count]) => {
         that.removeLoadedScript(url);
-        const head = doc.head;
+        const { head } = doc;
         const script = doc.createElement('script');
         script.id = url;
         script.async = false;
@@ -115,26 +115,30 @@
             throw new Error(`${e.target.src} no found!`);
           }
         });
-        script.addEventListener('load', () => {
-          const _url = urls[count += 1];
-          if (_url) {
-            _loadScript(_url);
-          } else {
-            callback && callback();
-          }
-        }, false);
+        script.addEventListener(
+          'load',
+          () => {
+            const _url = urls[(count += 1)];
+            if (_url) {
+              _loadScript(_url);
+            } else {
+              callback && callback();
+            }
+          },
+          false
+        );
       };
       _loadScript();
-    }
+    };
 
     removeLoadedScript = (name) => {
       const script = document.getElementById(name);
       if (script && script.remove) script.remove();
-    }
+    };
 
     updateFilePath = (callback) => {
       const that = this;
-      const mapPath = that.options.mapPath;
+      const { mapPath } = that.options;
       that.ajax({
         url: mapPath,
         success: (res) => {
@@ -157,7 +161,7 @@
           }
         }
       });
-    }
+    };
 
     updateLoaderStatus(status = true) {
       root[`${this.options.cacheSuffix}__STATUS__`] = status;
@@ -166,8 +170,7 @@
 
     run = (callback) => {
       const that = this;
-      const options = that.options;
-      const async = options.async;
+      const { options } = that;
 
       if (this.loaderStatus && !options.canReload) {
         options.callback();
@@ -175,7 +178,7 @@
       }
       that.updateLoaderStatus();
       const oldUrls = that.getFilePaths();
-      if (!async && oldUrls) {
+      if (!options.async && oldUrls) {
         that.loadScripts(oldUrls, () => {
           that.updateFilePath(() => {
             options.callback();
@@ -188,9 +191,8 @@
           });
         });
       }
-    }
+    };
   }
-
 
   root.sdkLoader = (opts = {}, callback = () => {}) => {
     if (!opts.mapPath) {
@@ -226,7 +228,7 @@
    */
   function setLocalStorageItem(key, data) {
     const updateTime = Date.now();
-    const value = {updateTime, data};
+    const value = { updateTime, data };
     root.localStorage.setItem(key, JSON.stringify(value));
   }
 
