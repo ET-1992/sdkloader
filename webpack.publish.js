@@ -5,10 +5,13 @@ function getPlugins() {
   return [
     new webpack.optimize.UglifyJsPlugin({
       compress: {
-        warnings: false
+        warnings: false,
+        comparisons: false
       },
-      comments: false,
-      beautify: false,
+      output: {
+        comments: false,
+        ascii_only: true
+      },
       sourceMap: false
     }),
     new webpack.DefinePlugin({
@@ -21,11 +24,12 @@ function getPlugins() {
 
 webpackConfig.entry =  {
   'loader': './src/loader.js',
+  'xiss.admin.loader': './src/xiss.admin.loader.js'
 }
 
 webpackConfig.output.filename = '[name].min.js';
 webpackConfig.plugins = webpackConfig.plugins.concat(getPlugins());
-webpackConfig.devtool = 'nosources-source-map';
+webpackConfig.devtool = false;
 delete webpackConfig.devServer
 
 

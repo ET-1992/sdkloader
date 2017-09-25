@@ -1,15 +1,15 @@
 {
-  "name": "@ali/sdkloader",
+  "name": "sdkloader",
   "description": "A loader for js-sdk file",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "jingui.pjg <jingui.pjg@alibaba-inc.com>",
   "main": "lib/loader.min.js",
   "scripts": {
     "clean": "rm -r lib || true",
     "lint": "eslint src",
     "dev": "webpack-dev-server --config webpack.config.js --watch",
-    "publish": "webpack --config webpack.publish.js",
-    "prepublish": "npm run clean"
+    "build": "webpack --config webpack.publish.js",
+    "prebuild": "npm run clean"
   },
   "devDependencies": {
     "autod": "^2.9.0",

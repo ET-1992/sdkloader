@@ -2,22 +2,16 @@ module.exports = {
   write: true,
   prefix: '~',
   devprefix: '^',
-  exclude: [
-    './lib',
-    './webpack.config.js',
-    './webpack.publish.js'
-  ],
-  dep: [
-
-  ],
+  exclude: ['./lib', './webpack.config.js', './webpack.publish.js'],
+  dep: [],
   devdep: [
     'autod',
     'babel-eslint',
-    // 'babel-plugin-transform-async-to-generator',
+    'babel-plugin-transform-async-to-generator',
     'babel-plugin-transform-decorators-legacy',
     'babel-plugin-transform-es2015-destructuring',
     'babel-plugin-transform-es2015-for-of',
-    // 'babel-plugin-transform-es2015-modules-commonjs',
+    'babel-plugin-transform-es2015-modules-commonjs',
     'babel-plugin-transform-es2015-parameters',
     'babel-plugin-transform-es2015-spread',
     'babel-plugin-transform-es2015-arrow-functions',

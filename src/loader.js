@@ -8,6 +8,7 @@
       this.loaderStatus = !!root[`${opts.cacheSuffix}__STATUS__`];
       this.options = {
         mapPath: '',
+        staticHost: null,
         // mapKeys: null,
         accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
         retryTimes: 2,
@@ -94,23 +95,25 @@
      */
     loadScripts = (urls, callback) => {
       const that = this;
+      const { options } = that;
       let count = 0;
       const _loadScript = (url = urls[count]) => {
         that.removeLoadedScript(url);
         const { head } = doc;
         const script = doc.createElement('script');
+        const src = options.staticHost ? options.staticHost + url : url;
         script.id = url;
         script.async = false;
         script.type = 'text/javascript';
         script.charset = 'utf-8';
-        script.src = url;
+        script.src = src;
         that.insertAfter(script, head.lastChild);
         script.addEventListener('error', (e) => {
           that.removeFilePaths();
-          if (that.options.retryTimes > 0) {
+          if (options.retryTimes > 0) {
             that.updateLoaderStatus(false);
             that.run();
-            that.options.retryTimes += -1;
+            options.retryTimes += -1;
           } else {
             throw new Error(`${e.target.src} no found!`);
           }
@@ -138,9 +141,9 @@
 
     updateFilePath = (callback) => {
       const that = this;
-      const { mapPath } = that.options;
+      const { mapPath, staticHost } = that.options;
       that.ajax({
-        url: mapPath,
+        url: staticHost ? staticHost + mapPath : mapPath,
         success: (res) => {
           const data = JSON.parse(res);
           let urls = [];

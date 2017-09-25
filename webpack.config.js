@@ -16,13 +16,13 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /src\/\w+\.js|jsx$/,
+      test: /src\/.+\.js$/,
       loader: 'eslint-loader',
       exclude: /node_modules/,
       enforce: 'pre' // webpack2写法
     },
     {
-      test: /src\/\w+\.js|jsx$/,
+      test: /src\/.+\.js$/,
       loader: 'babel-loader',
       exclude: /node_modules/
     }]
