@@ -26,7 +26,7 @@
     removeFilePaths() {
       localStorage.removeItem(this.loaderPath);
     }
-    ajax = (opts) => {
+    ajax = opts => {
       const options = opts || {};
       options.dataType = options.dataType || 'json';
       const params = this.formatParams(options.data);
@@ -44,7 +44,7 @@
       xhr.open('GET', `${options.url}?${params}`, true);
       xhr.send(null);
     };
-    formatParams = (data) => {
+    formatParams = data => {
       const arr = [];
       for (const name in data) {
         if ({}.hasOwnProperty.call(data, name)) {
@@ -52,7 +52,7 @@
         }
       }
       const ver = this.dateStep();
-      arr.push(`v=${ver}`);
+      arr.push(`vsr=${ver}`);
       return arr.join('&');
     };
 
@@ -75,7 +75,21 @@
           step = 10;
           break;
       }
-      return Math.floor(Date.parse(new Date()) / 1000 / step);
+      const res = parseFloat(`0.${Math.floor(new Date().getTime() / 1000 / step) * 9999}`);
+      const newtime =
+        (res + 0.2)
+          .toString(36)
+          .substr(2)
+          .split('')
+          .reverse()
+          .join('') +
+        (res + 0.9)
+          .toString(36)
+          .substr(2)
+          .split('')
+          .reverse()
+          .join('');
+      return newtime;
     };
 
     insertAfter = (newElement, targetElement) => {
@@ -108,7 +122,7 @@
         script.charset = 'utf-8';
         script.src = src;
         that.insertAfter(script, head.lastChild);
-        script.addEventListener('error', (e) => {
+        script.addEventListener('error', e => {
           that.removeFilePaths();
           if (options.retryTimes > 0) {
             that.updateLoaderStatus(false);
@@ -134,17 +148,17 @@
       _loadScript();
     };
 
-    removeLoadedScript = (name) => {
+    removeLoadedScript = name => {
       const script = document.getElementById(name);
       if (script && script.remove) script.remove();
     };
 
-    updateFilePath = (callback) => {
+    updateFilePath = callback => {
       const that = this;
       const { mapPath, staticHost } = that.options;
       that.ajax({
         url: staticHost ? staticHost + mapPath : mapPath,
-        success: (res) => {
+        success: res => {
           const data = JSON.parse(res);
           let urls = [];
           if (isArray(data)) {
@@ -171,7 +185,7 @@
       this.loaderStatus = status;
     }
 
-    run = (callback) => {
+    run = callback => {
       const that = this;
       const { options } = that;
 
@@ -188,7 +202,7 @@
           });
         });
       } else {
-        that.updateFilePath((urls) => {
+        that.updateFilePath(urls => {
           that.loadScripts(urls, () => {
             options.callback();
           });
