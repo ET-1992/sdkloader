@@ -4,12 +4,13 @@
 ((root, doc) => {
   class Loader {
     constructor(opts) {
-      this.loaderPath = `${opts.cachePrefix}__LOADER_PATH__`;
-      this.loaderStatus = !!root[`${opts.cachePrefix}__STATUS__`];
+      this.loaderPath = `${opts.cacheSuffix}__LOADER_PATH__`;
+      this.loaderStatus = !!root[`${opts.cacheSuffix}__STATUS__`];
       this.options = {
         mapPath: '',
+        staticHost: null,
         // mapKeys: null,
-        accuracy: 0, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
+        accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
         retryTimes: 2,
         async: false,
         canReload: true // 允许加载相同的sdk
@@ -32,7 +33,7 @@
       const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
-          const status = xhr.status;
+          const { status } = xhr;
           if (status >= 200 && status < 300 && options.success) {
             options.success(xhr.responseText, xhr.responseXML);
           } else if (options.fail) {
@@ -42,7 +43,7 @@
       };
       xhr.open('GET', `${options.url}?${params}`, true);
       xhr.send(null);
-    }
+    };
     formatParams = (data) => {
       const arr = [];
       for (const name in data) {
@@ -51,9 +52,9 @@
         }
       }
       const ver = this.dateStep();
-      arr.push((`v=${ver}`));
+      arr.push(`v=${ver}`);
       return arr.join('&');
-    }
+    };
 
     dateStep = () => {
       let step;
@@ -75,7 +76,7 @@
           break;
       }
       return Math.floor(Date.parse(new Date()) / 1000 / step);
-    }
+    };
 
     insertAfter = (newElement, targetElement) => {
       const parent = targetElement.parentNode;
@@ -84,7 +85,7 @@
       } else {
         parent.insertBefore(newElement, targetElement.nextSibling);
       }
-    }
+    };
 
     /**
      * 动态插入js文件
@@ -94,49 +95,55 @@
      */
     loadScripts = (urls, callback) => {
       const that = this;
+      const { options } = that;
       let count = 0;
       const _loadScript = (url = urls[count]) => {
         that.removeLoadedScript(url);
-        const head = doc.head;
+        const { head } = doc;
         const script = doc.createElement('script');
+        const src = options.staticHost ? options.staticHost + url : url;
         script.id = url;
         script.async = false;
         script.type = 'text/javascript';
         script.charset = 'utf-8';
-        script.src = url;
+        script.src = src;
         that.insertAfter(script, head.lastChild);
         script.addEventListener('error', (e) => {
           that.removeFilePaths();
-          if (that.options.retryTimes > 0) {
+          if (options.retryTimes > 0) {
             that.updateLoaderStatus(false);
             that.run();
-            that.options.retryTimes += -1;
+            options.retryTimes += -1;
           } else {
             throw new Error(`${e.target.src} no found!`);
           }
         });
-        script.addEventListener('load', () => {
-          const _url = urls[count += 1];
-          if (_url) {
-            _loadScript(_url);
-          } else {
-            callback && callback();
-          }
-        }, false);
+        script.addEventListener(
+          'load',
+          () => {
+            const _url = urls[(count += 1)];
+            if (_url) {
+              _loadScript(_url);
+            } else {
+              callback && callback();
+            }
+          },
+          false
+        );
       };
       _loadScript();
-    }
+    };
 
     removeLoadedScript = (name) => {
       const script = document.getElementById(name);
       if (script && script.remove) script.remove();
-    }
+    };
 
     updateFilePath = (callback) => {
       const that = this;
-      const mapPath = that.options.mapPath;
+      const { mapPath, staticHost } = that.options;
       that.ajax({
-        url: mapPath,
+        url: staticHost ? staticHost + mapPath : mapPath,
         success: (res) => {
           const data = JSON.parse(res);
           let urls = [];
@@ -157,17 +164,16 @@
           }
         }
       });
-    }
+    };
 
     updateLoaderStatus(status = true) {
-      root[`${this.options.cachePrefix}__STATUS__`] = status;
+      root[`${this.options.cacheSuffix}__STATUS__`] = status;
       this.loaderStatus = status;
     }
 
     run = (callback) => {
       const that = this;
-      const options = that.options;
-      const async = options.async;
+      const { options } = that;
 
       if (this.loaderStatus && !options.canReload) {
         options.callback();
@@ -175,7 +181,7 @@
       }
       that.updateLoaderStatus();
       const oldUrls = that.getFilePaths();
-      if (!async && oldUrls) {
+      if (!options.async && oldUrls) {
         that.loadScripts(oldUrls, () => {
           that.updateFilePath(() => {
             options.callback();
@@ -188,17 +194,18 @@
           });
         });
       }
-    }
+    };
   }
-
 
   root.sdkLoader = (opts = {}, callback = () => {}) => {
     if (!opts.mapPath) {
       throw new Error('Failed to setting "mapPath"...');
     }
-
-    opts.cachePrefix = `${root.location.hostname}_${opts.mapPath.split('/').pop()}`;
-    console.log(opts.cachePrefix);
+    if (opts.cacheSuffix) {
+      opts.cacheSuffix = `${root.location.hostname}_${opts.cacheSuffix}`;
+    } else {
+      opts.cacheSuffix = `${root.location.hostname}_${opts.mapPath.split('/').pop()}`;
+    }
     opts.callback = callback;
     new Loader(opts).run();
   };
@@ -224,7 +231,7 @@
    */
   function setLocalStorageItem(key, data) {
     const updateTime = Date.now();
-    const value = {updateTime, data};
+    const value = { updateTime, data };
     root.localStorage.setItem(key, JSON.stringify(value));
   }
 

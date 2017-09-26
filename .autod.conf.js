@@ -2,15 +2,8 @@ module.exports = {
   write: true,
   prefix: '~',
   devprefix: '^',
-  exclude: [
-    './lib',
-    './webpack.*.js'
-  ],
-  dep: [
-    'babel-core',
-    'babel-loader',
-    'eslint-loader'
-  ],
+  exclude: ['./lib', './webpack.config.js', './webpack.publish.js'],
+  dep: [],
   devdep: [
     'autod',
     'babel-eslint',
@@ -25,9 +18,12 @@ module.exports = {
     'babel-plugin-transform-object-assign',
     'babel-preset-es2015',
     'babel-preset-stage-1',
-    // 'babel-register',
     'eslint',
-    'eslint-config-airbnb',
-    'eslint-plugin-import'
+    'eslint-config-airbnb-base',
+    'eslint-plugin-import',
+    'babel-loader',
+    'eslint-loader',
+    'webpack',
+    'webpack-dev-server'
   ]
 };
