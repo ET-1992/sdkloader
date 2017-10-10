@@ -1,6 +1,10 @@
 /* eslint no-console: */
 /* eslint no-unused-expressions: */
 /* eslint no-underscore-dangle: */
+
+/**
+ * [sdkloader for napi 版本]
+ */
 ((root, doc) => {
   const { toString, hasOwnProperty } = Object.prototype;
   /**
@@ -9,22 +13,25 @@
    * @return {*}     [返回localstorage的value]
    */
   function getLocalStorageItem(key) {
-    let cacheData = root.localStorage.getItem(key);
+    let val = null;
+    const cacheData = root.localStorage.getItem(key);
     if (cacheData) {
-      cacheData = JSON.parse(cacheData);
-      return cacheData.data;
+      val = JSON.parse(cacheData);
     }
-    return null;
+    return val;
   }
 
   /**
    * [设置localstorage的值]
    * @param {string} key          [localstorage的key]
    * @param {*} data         [localstorage的value]
+   * @param {number} expireSecond [多少秒后过期]
    */
-  function setLocalStorageItem(key, data) {
-    const updateTime = new Date().getTime();
-    const value = { updateTime, data };
+  function setLocalStorageItem(key, data, expireSecond) {
+    const nowTime = new Date().getTime();
+    const expireTime = expireSecond ? nowTime + expireSecond * 1000 : ''; // eslint-disable-line
+    const value = { data };
+    if (expireTime) value.expireTime = expireTime;
     root.localStorage.setItem(key, JSON.stringify(value));
   }
 
@@ -35,15 +42,14 @@
   function isObject(o) {
     return toString.call(o) === '[object Object]';
   }
+
   class Loader {
     constructor(opts) {
       this.loaderPath = `${opts.cacheSuffix}__LOADER_PATH__`;
       this.loaderStatus = !!root[`${opts.cacheSuffix}__STATUS__`];
       this.options = {
         mapPath: '',
-        versionApi: null,
-        staticHost: null,
-        // mapKeys: null,
+        staticHost: '',
         accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
         retryTimes: 2,
         async: false,
@@ -52,10 +58,11 @@
       Object.assign(this.options, opts);
     }
     getFilePaths() {
-      return getLocalStorageItem(this.loaderPath);
+      const cacheData = getLocalStorageItem(this.loaderPath);
+      return cacheData;
     }
     saveFilePaths(val) {
-      setLocalStorageItem(this.loaderPath, val);
+      setLocalStorageItem(this.loaderPath, val, this.dateStep());
     }
     removeFilePaths() {
       localStorage.removeItem(this.loaderPath);
@@ -86,11 +93,10 @@
           arr.push(`${encodeURIComponent(name)}=${encodeURIComponent(data[name])}`);
         }
       }
-      const ver = this.dateStep();
+      const ver = this.randomString();
       arr.push(`vsr=${ver}`);
       return arr.join('&');
     };
-
     dateStep = () => {
       let step;
       switch (this.options.accuracy) {
@@ -110,7 +116,10 @@
           step = 10;
           break;
       }
-      const res = parseFloat(`0.${Math.floor(new Date().getTime() / 1000 / step) * 9999}`);
+      return step;
+    };
+    randomString = () => {
+      const res = parseFloat(`0.${Math.floor(new Date().getTime() / 1000 / this.dateStep()) * 9999}`);
       const newtime =
         (res + 0.2)
           .toString(36)
@@ -150,7 +159,7 @@
         that.removeLoadedScript(url);
         const { head } = doc;
         const script = doc.createElement('script');
-        const src = options.staticHost ? options.staticHost + url : url;
+        const src = url.indexOf('//') === -1 && options.staticHost ? options.staticHost + url : url;
         script.id = url;
         script.async = false;
         script.type = 'text/javascript';
@@ -158,6 +167,7 @@
         script.src = src;
         that.insertAfter(script, head.lastChild);
         script.addEventListener('error', e => {
+          // console.log(e);
           that.removeFilePaths();
           if (options.retryTimes > 0) {
             that.updateLoaderStatus(false);
@@ -184,32 +194,39 @@
     };
 
     removeLoadedScript = name => {
-      const script = document.getElementById(name);
+      const script = doc.getElementById(name);
       if (script && script.remove) script.remove();
     };
 
     updateFilePath = callback => {
       const that = this;
       const { mapPath, staticHost } = that.options;
+      const url = mapPath.indexOf('//') === -1 && staticHost ? staticHost + mapPath : mapPath;
       that.ajax({
-        url: staticHost ? staticHost + mapPath : mapPath,
+        url,
         success: res => {
-          const data = JSON.parse(res);
-          let urls = [];
-          if (isArray(data)) {
-            urls = [...data];
-          } else if (isObject(data)) {
-            for (const key in data) {
-              if (hasOwnProperty.call(data, key)) {
-                urls.push(data[key]);
+          if (res) {
+            let result = JSON.parse(res);
+            if (result.data) {
+              result = isArray(result.data) ? result.data[0].file : result.data.file;
+              let urls = [];
+              console.log(result);
+              if (isArray(result)) {
+                urls = [...result];
+              } else if (isObject(result)) {
+                for (const key in result) {
+                  if (hasOwnProperty.call(result, key)) {
+                    urls.push(result[key]);
+                  }
+                }
+              }
+              if (urls.length) {
+                that.saveFilePaths(urls);
+                callback && callback(urls);
+              } else {
+                throw new Error('No javascript files needed to load?');
               }
             }
-          }
-          if (urls.length) {
-            that.saveFilePaths(urls);
-            callback && callback(urls);
-          } else {
-            throw new Error('No javascript files needed to load?');
           }
         }
       });
@@ -229,12 +246,17 @@
         return;
       }
       that.updateLoaderStatus();
-      const oldUrls = that.getFilePaths();
-      if (!options.async && oldUrls) {
-        that.loadScripts(oldUrls, () => {
-          that.updateFilePath(() => {
+      const timeNow = new Date().getTime();
+      const paths = that.getFilePaths();
+      if (paths && paths.data && !options.async) {
+        that.loadScripts(paths.data, () => {
+          if (paths.expireTime < timeNow) {
+            that.updateFilePath(() => {
+              options.callback();
+            });
+          } else {
             options.callback();
-          });
+          }
         });
       } else {
         that.updateFilePath(urls => {

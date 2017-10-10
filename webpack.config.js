@@ -5,6 +5,8 @@ const curDir = __dirname;
 module.exports = {
   entry: {
     'loader': './src/loader.js',
+    'loader.v2': './src/loader.v2.js',
+    'xiss.admin.loader': './src/xiss.admin.loader.js',
     'sdkloader': './src/sdkloader_demo.js',
   },
   output: {
