@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+bransh=$(git symbolic-ref --short -q HEAD)
+echo $bransh
+git add --all
+git commit -m 'feat: update'
+git push -u origin $bransh
