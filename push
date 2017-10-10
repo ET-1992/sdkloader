@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 bransh=$(git symbolic-ref --short -q HEAD)
-echo $bransh
+git fetch -p
 git add --all
-git commit -m 'feat: update'
+git commit -m 'feat: auto update'
 git push -u origin $bransh
