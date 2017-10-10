@@ -3,13 +3,15 @@
   "description": "A loader for js-sdk file",
   "version": "0.0.4",
   "author": "jingui.pjg <jingui.pjg@alibaba-inc.com>",
-  "main": "lib/loader.min.js",
+  "main": "lib/loader.v2.min.js",
   "scripts": {
-    "clean": "rm -r lib || true",
+    "clean": "rimraf -r lib || true",
     "lint": "eslint src",
     "dev": "webpack-dev-server --config webpack.config.js --watch",
     "build": "webpack --config webpack.publish.js",
-    "prebuild": "npm run clean"
+    "publish": "sh push",
+    "prebuild": "npm run clean",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
     "autod": "^2.9.0",
@@ -29,7 +31,8 @@
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.7.0",
     "webpack": "^3.5.5",
-    "webpack-dev-server": "^2.7.1"
+    "webpack-dev-server": "^2.7.1",
+    "rimraf": "^2.6.2"
   },
   "dependencies": {},
   "license": "MIT",

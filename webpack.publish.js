@@ -24,6 +24,7 @@ function getPlugins() {
 
 webpackConfig.entry =  {
   'loader': './src/loader.js',
+  'loader.v2': './src/loader.v2.js',
   'xiss.admin.loader': './src/xiss.admin.loader.js'
 }
 
