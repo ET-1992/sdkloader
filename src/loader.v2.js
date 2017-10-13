@@ -43,6 +43,16 @@
     return toString.call(o) === '[object Object]';
   }
 
+  function objectValuesAsArray(obj) {
+    const arr = [];
+    for (const key in obj) {
+      if (hasOwnProperty.call(obj, key)) {
+        arr.push(obj[key]);
+      }
+    }
+    return arr;
+  }
+
   class Loader {
     constructor(opts) {
       this.loaderPath = `${opts.cacheSuffix}__LOADER_PATH__`;
@@ -206,31 +216,29 @@
         url,
         success: res => {
           if (res) {
+            let urls = [];
             let result = JSON.parse(res);
             if (result.data) {
               result = isArray(result.data) ? result.data[0].file : result.data.file;
-              let urls = [];
-              console.log(result);
               if (isArray(result)) {
                 urls = [...result];
               } else if (isObject(result)) {
-                for (const key in result) {
-                  if (hasOwnProperty.call(result, key)) {
-                    urls.push(result[key]);
-                  }
-                }
+                urls = objectValuesAsArray(result);
               }
-              if (urls.length) {
-                that.saveFilePaths(urls);
-                callback && callback(urls);
-              } else {
-                throw new Error('No javascript files needed to load?');
-              }
+            } else if (isObject(result)) {
+              urls = objectValuesAsArray(result);
+            }
+            if (urls.length) {
+              that.saveFilePaths(urls);
+              callback && callback(urls);
+            } else {
+              throw new Error('No javascript files needed to load?');
             }
           }
         }
       });
     };
+
 
     updateLoaderStatus(status = true) {
       root[`${this.options.cacheSuffix}__STATUS__`] = status;
