@@ -19,6 +19,7 @@ window.STATIC_HOST_PREFIX = window.STATIC_HOST + '/s/uae/g/1y/';
 </head>
 <body>
 <div id="main"></div>
+<div id="comment"></div>
 <script type="text/javascript">
 window.jsonData = {
   images: [
@@ -89,37 +90,6 @@ window.jsonData = {
 };
 </script>
 <script type="text/javascript" src="//image.uc.cn/s/uae/g/1y/libs/uc-jsdk.js" crossorigin="anonymous"></script>
-<script type="text/javascript" src="//100.84.248.189:9090/loader.v2.js" crossorigin="anonymous"></script>
-<script>
-(function() {
-  function getQueryString(name) {
-    var reg = new RegExp('(\\?|^|&|#)' + name + '=([^&|^#]*)(&|$|#)', 'i');
-    var r = window.location.href.match(reg);
-    var ret = '';
-    if (r != null) {
-      ret = decodeURIComponent(r[2]);
-    }
-    return ret;
-  }
-  var envName = 'release';
-  var host = location.host;
-  if (host.indexOf('.c.uc.cn') !== -1) {
-    envName = 'master';
-  }
-  if (getQueryString('clb_debug') === '1') {
-    envName = 'release';
-  }
-  window.sdkLoader(
-    {
-      mapPath:
-      `http://napi.uc.cn/3/classes/sdkload_map/objects/xiss.article.sdk.clb.${envName}?_app_id=subpages&_fetch=1`,
-      staticHost: '//image.uc.cn/s/uae/g/1y/'
-    },
-    function() {
-      console.log('loaded');
-    }
-  );
-})();
-</script>
+<script type="text/javascript" src="//100.84.248.189:9090/xiss.admin.loader.js" crossorigin="anonymous"></script>
 </body>
 </html>

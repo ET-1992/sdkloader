@@ -1,7 +1,7 @@
 {
   "name": "sdkloader",
   "description": "A loader for js-sdk file",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "jingui.pjg <jingui.pjg@alibaba-inc.com>",
   "main": "lib/loader.v2.min.js",
   "scripts": {
