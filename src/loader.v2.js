@@ -7,6 +7,7 @@
  */
 ((root, doc) => {
   const { toString, hasOwnProperty } = Object.prototype;
+  function noop() {}
   /**
    * [读取localstorage的值]
    * @param  {string} key [localstorage的key]
@@ -76,6 +77,10 @@
     }
     removeFilePaths() {
       localStorage.removeItem(this.loaderPath);
+    }
+    removeLoadedScript = (name) => {
+      const script = doc.getElementById(name);
+      if (script && script.remove) script.remove();
     }
     ajax = opts => {
       const options = opts || {};
@@ -170,7 +175,7 @@
         const { head } = doc;
         const script = doc.createElement('script');
         const src = url.indexOf('//') === -1 && options.staticHost ? options.staticHost + url : url;
-        script.id = url;
+        script.id = url.split('/').pop();
         script.async = false;
         script.type = 'text/javascript';
         script.charset = 'utf-8';
@@ -183,8 +188,9 @@
             that.updateLoaderStatus(false);
             that.run();
             options.retryTimes += -1;
-          } else {
-            throw new Error(`${e.target.src} no found!`);
+          } else if (options.error) {
+            // throw new Error(`${e.target.src} no found!`);
+            options.error(`${e.target.src} no found!`);
           }
         });
         script.addEventListener(
@@ -203,10 +209,6 @@
       _loadScript();
     };
 
-    removeLoadedScript = name => {
-      const script = doc.getElementById(name);
-      if (script && script.remove) script.remove();
-    };
 
     updateFilePath = callback => {
       const that = this;
@@ -276,7 +278,7 @@
     };
   }
 
-  root.sdkLoader = (opts = {}, callback = () => {}) => {
+  root.sdkLoader = (opts = {}, callback = noop, error = noop) => {
     if (!opts.mapPath) {
       throw new Error('Failed to setting "mapPath"...');
     }
@@ -286,6 +288,7 @@
       opts.cacheSuffix = `${root.location.hostname}_${opts.mapPath.split('?').shift().split('/').pop()}`;
     }
     opts.callback = callback;
+    opts.error = error;
     new Loader(opts).run();
   };
 })(window, document);
