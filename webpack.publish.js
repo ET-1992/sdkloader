@@ -3,17 +3,17 @@ const webpackConfig = require('./webpack.config.js');
 
 function getPlugins() {
   return [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-        comparisons: false
-      },
-      output: {
-        comments: false,
-        ascii_only: true
-      },
-      sourceMap: false
-    }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   compress: {
+    //     warnings: false,
+    //     comparisons: false
+    //   },
+    //   output: {
+    //     comments: false,
+    //     ascii_only: true
+    //   },
+    //   sourceMap: false
+    // }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production')
