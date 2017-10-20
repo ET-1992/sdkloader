@@ -223,7 +223,7 @@
             if (result.data) {
               result = isArray(result.data) ? result.data[0].file : result.data.file;
               if (isArray(result)) {
-                urls = [...result];
+                urls = result;
               } else if (isObject(result)) {
                 urls = objectValuesAsArray(result);
               }
