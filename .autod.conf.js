@@ -7,6 +7,7 @@ module.exports = {
   devdep: [
     'autod',
     'babel-eslint',
+    'babel-plugin-transform-runtime',
     'babel-plugin-transform-async-to-generator',
     'babel-plugin-transform-decorators-legacy',
     'babel-plugin-transform-es2015-destructuring',
@@ -16,8 +17,9 @@ module.exports = {
     'babel-plugin-transform-es2015-spread',
     'babel-plugin-transform-es2015-arrow-functions',
     'babel-plugin-transform-object-assign',
+    'babel-plugin-transform-object-rest-spread',
     'babel-preset-es2015',
-    'babel-preset-stage-1',
+    'babel-preset-stage-0',
     'eslint',
     'eslint-config-airbnb-base',
     'eslint-plugin-import',
