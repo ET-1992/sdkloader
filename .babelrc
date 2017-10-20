@@ -3,7 +3,7 @@
     "es2015",
     "stage-1"
   ],
-  "plugins":[
+  "plugins": [
     "transform-async-to-generator",
     "transform-decorators-legacy",
     "transform-es2015-destructuring",
@@ -12,6 +12,7 @@
     "transform-es2015-parameters",
     "transform-es2015-spread",
     "transform-es2015-arrow-functions",
-    "transform-object-assign"
+    "transform-object-assign",
+    "transform-object-rest-spread"
   ]
 }

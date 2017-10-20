@@ -1,6 +1,6 @@
 import './loader.v2';
 
-window.setCommentEnv = (env, pkgName) => {
+window.setCommentEnv = (env, pkgName = 'comment-sdk.commentsdk') => {
   const listId = `${pkgName}.${env}`;
   const apiPath = `//napi.uc.cn/3/classes/sdk_loader_maps/lists/${listId}`;
   const apiQuery = [
