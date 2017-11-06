@@ -1,8 +1,8 @@
 import './loader.v2';
 
-window.setCommentEnv = (env, pkgName = 'comment-sdk.commentsdk') => {
+window.setCommentEnv = (env, pkgName = 'comment-sdk.commentsdk', whichProtocal = 'https:') => {
   const listId = `${pkgName}.${env}`;
-  const apiPath = `//napi.uc.cn/3/classes/sdk_loader_maps/lists/${listId}`;
+  const apiPath = `${whichProtocal}//napi.uc.cn/3/classes/sdk_loader_maps/lists/${listId}`;
   const apiQuery = [
     '_app_id=zdl',
     '_fetch=1',
@@ -11,7 +11,7 @@ window.setCommentEnv = (env, pkgName = 'comment-sdk.commentsdk') => {
   return {
     mapPath: `${apiPath}?${apiQuery.join('&')}`,
     cacheSuffix: listId,
-    staticHost: '//image.uc.cn/s/uae/g/1y/'
+    staticHost: `${whichProtocal}//image.uc.cn/s/uae/g/1y/`
   };
 };
 
