@@ -2,6 +2,6 @@
 
 bransh=$(git symbolic-ref --short -q HEAD)
 git fetch -p
-git add --all
+git add .
 git commit -m 'feat: auto update'
 git push -u origin $bransh

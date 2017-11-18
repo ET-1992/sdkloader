@@ -1,13 +1,30 @@
 const path = require('path');
+const os = require('os');
 // const webpack = require('webpack');
+
+function getIPAddress() {
+  const interfaces = os.networkInterfaces();
+  for (const devName in interfaces) {
+    const iface = interfaces[devName];
+    for (let i = 0; i < iface.length; i++) {
+      const alias = iface[i];
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+        return alias.address;
+      }
+    }
+  }
+
+  return '127.0.0.1';
+}
 
 const curDir = __dirname;
 module.exports = {
   entry: {
     'loader': './src/loader.js',
     'loader.v2': './src/loader.v2.js',
+    'loader.v3': './src/loader.v3.js',
     'xiss.admin.loader': './src/xiss.admin.loader.js',
-    'sdkloader': './src/sdkloader_demo.js',
+    'sdkloader': './src/sdkloader_demo.js'
   },
   output: {
     path: path.join(curDir, 'lib'),
@@ -38,7 +55,7 @@ module.exports = {
     // })
   ],
   devServer: {
-    host: '100.84.248.189',
+    host: getIPAddress(),
     contentBase: './',
     port: 9090
   }

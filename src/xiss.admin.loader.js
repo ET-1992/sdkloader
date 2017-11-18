@@ -1,4 +1,4 @@
-import './loader.v2';
+import './loader.v3';
 
 {
   function setOptions() {
