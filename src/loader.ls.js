@@ -286,7 +286,7 @@
             callback(res);
           },
           fail() {
-            _getFilePath(cdnMapPath);
+            cdnMapPath && _getFilePath(cdnMapPath);
           }
         });
       };
