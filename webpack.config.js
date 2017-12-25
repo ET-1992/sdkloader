@@ -21,10 +21,8 @@ const curDir = __dirname;
 module.exports = {
   entry: {
     'loader': './src/loader.js',
-    'loader.v2': './src/loader.v2.js',
-    'loader.v3': './src/loader.v3.js',
-    'xiss.admin.loader': './src/xiss.admin.loader.js',
-    'sdkloader': './src/sdkloader_demo.js'
+    'loader.ls': './src/loader.ls.js',
+    'loader.ls.demo': './src/loader.ls.demo.js'
   },
   output: {
     path: path.join(curDir, 'lib'),
@@ -46,7 +44,7 @@ module.exports = {
       exclude: /node_modules/
     }]
   },
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   plugins: [
     // new webpack.optimize.UglifyJsPlugin({
     //   compress: {
