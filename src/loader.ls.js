@@ -293,7 +293,6 @@
       _getFilePath(mapPath);
     }
 
-
     loadVersionApi = (callback = noop) => {
       const { lsCache } = this.options;
       this.ajaxGet((res) => {
@@ -321,12 +320,10 @@
       });
     }
 
-
     updateLoaderStatus(status = true) {
       root[`${this.options.cachePrefix}__STATUS__`] = status;
       this.loaderStatus = status;
     }
-
 
     saveMaps = () => {
       setLsItem(this.mapsKey, this.maps, this.dateStep());
@@ -376,7 +373,6 @@
         this.createTextNode(webpackModuleFn);
       }
     }
-
 
     // 加载单个模块
     loadModule = (name, callback) => {
