@@ -24,6 +24,7 @@ function getPlugins() {
 
 webpackConfig.entry =  {
   'loader': './src/loader.js',
+  'loader.v2': './src/loader.v2.js',
   'loader.ls': './src/loader.ls.js',
   'loader.ls.demo': './src/loader.ls.demo.js'
 }

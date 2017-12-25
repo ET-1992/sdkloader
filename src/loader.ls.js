@@ -45,12 +45,6 @@
     root.localStorage.removeItem(key);
   }
 
-  function objectValueToArray(obj) {
-    const arr = [];
-    forEach(obj, (val) => arr.push(val));
-    return arr;
-  }
-
   function type(obj) {
     let t;
     if (obj == null) {
@@ -87,6 +81,12 @@
         }
       }
     }
+  }
+
+  function objectValueToArray(obj) {
+    const arr = [];
+    forEach(obj, (val) => arr.push(val));
+    return arr;
   }
 
   // const md5 = (str) => root.__SDKLIB__ && root.__SDKLIB__.md5 && root.__SDKLIB__.md5(str);
@@ -156,7 +156,8 @@
     formatParams = data => {
       const arr = [];
       forEach(data, (val, key) => arr.push(`${encodeURIComponent(key)}=${encodeURIComponent(val)}`));
-      return arr.length ? arr.join('&') : '';
+      arr.push(`vsr=${this.randomString()}`);
+      return arr.join('&');
     }
 
     dateStep = () => {
@@ -180,6 +181,15 @@
       }
       return step;
     }
+
+    randomString = () => {
+      const res = parseFloat(`0.${Math.floor(new Date().getTime() / 1000 / this.dateStep()) * 9999}`);
+      return (res + 0.2).toString(36)
+        .substr(2)
+        .split('')
+        .reverse()
+        .join('');
+    };
 
     insertAfter = (newElement, targetElement) => {
       const parent = targetElement.parentNode;

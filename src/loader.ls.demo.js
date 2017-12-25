@@ -1,4 +1,4 @@
-import './loader.ls';
+import './loader.v2';
 
 function setOptions() {
   const { host } = window.location;
