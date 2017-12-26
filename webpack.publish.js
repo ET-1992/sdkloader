@@ -25,9 +25,10 @@ function getPlugins() {
 webpackConfig.entry =  {
   'loader': './src/loader.js',
   'loader.v2': './src/loader.v2.js',
-  'xiss.admin.loader': './src/xiss.admin.loader.js',
   'comment.loader': './src/comment.loader.js',
-  'comment-detail.loader': './src/comment-detail.loader.js'
+  'comment-detail.loader': './src/comment-detail.loader.js',
+  'loader.ls': './src/loader.ls.js',
+  'loader.ls.demo': './src/loader.ls.demo.js'
 }
 
 webpackConfig.output.filename = '[name].min.js';

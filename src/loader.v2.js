@@ -36,21 +36,46 @@
     root.localStorage.setItem(key, JSON.stringify(value));
   }
 
+  function type(obj) {
+    let t;
+    if (obj == null) {
+      t = String(obj);
+    } else {
+      t = toString.call(obj).toLowerCase();
+      t = t.substring(8, t.length - 1);
+    }
+    return t;
+  }
   function isArray(o) {
-    return toString.call(o) === '[object Array]';
+    return type(o) === 'array';
   }
 
   function isObject(o) {
-    return toString.call(o) === '[object Object]';
+    return type(o) === 'object';
   }
 
-  function objectValuesAsArray(obj) {
-    const arr = [];
-    for (const key in obj) {
-      if (hasOwnProperty.call(obj, key)) {
-        arr.push(obj[key]);
+  // object or array 迭代器
+  function forEach(obj, iterator, ctx) {
+    if (typeof obj !== 'object') return;
+    let i;
+    let l;
+    const t = type(obj);
+    const context = ctx || obj;
+    if (t === 'array' || t === 'arguments' || t === 'nodelist') {
+      for (i = 0, l = obj.length; i < l; i += 1) {
+        if (iterator.call(context, obj[i], i, obj) === false) return;
+      }
+    } else {
+      for (i in obj) {
+        if (hasOwnProperty.call(obj, i)) {
+          if (iterator.call(context, obj[i], i, obj) === false) return;
+        }
       }
     }
+  }
+  function objectValueToArray(obj) {
+    const arr = [];
+    forEach(obj, (val) => arr.push(val));
     return arr;
   }
 
@@ -58,15 +83,17 @@
     constructor(opts) {
       this.loaderPath = `${opts.cacheSuffix}__LOADER_PATH__`;
       this.loaderStatus = !!root[`${opts.cacheSuffix}__STATUS__`];
-      this.options = {
+      this.results = {};
+      this.options = Object.assign({
         mapPath: '',
+        cndMapPath: '',
         staticHost: '',
         accuracy: 1, // 版本校验的精度，0:10秒级别，1:分钟级别，2:小时级别，3:天级别，4:周级别
         retryTimes: 2,
         async: false,
+        lsCache: false,
         canReload: true // 允许加载相同的sdk
-      };
-      Object.assign(this.options, opts);
+      }, opts);
     }
     getFilePaths() {
       const cacheData = getLocalStorageItem(this.loaderPath);
@@ -98,20 +125,17 @@
         }
       };
       const urlTag = options.url.indexOf('?') !== -1 ? '&' : '?';
-      xhr.open('GET', `${options.url}${urlTag}${params}`, true);
+      const url = params ? `${options.url}${urlTag}${params}` : options.url;
+      xhr.open('GET', url, true);
       xhr.send(null);
     };
     formatParams = data => {
       const arr = [];
-      for (const name in data) {
-        if (hasOwnProperty.call(data, name)) {
-          arr.push(`${encodeURIComponent(name)}=${encodeURIComponent(data[name])}`);
-        }
-      }
-      const ver = this.randomString();
-      arr.push(`vsr=${ver}`);
+      forEach(data, (val, key) => arr.push(`${encodeURIComponent(key)}=${encodeURIComponent(val)}`));
+      arr.push(`vsr=${this.randomString()}`);
       return arr.join('&');
-    };
+    }
+
     dateStep = () => {
       let step;
       switch (this.options.accuracy) {
@@ -132,24 +156,16 @@
           break;
       }
       return step;
-    };
+    }
+
     randomString = () => {
       const res = parseFloat(`0.${Math.floor(new Date().getTime() / 1000 / this.dateStep()) * 9999}`);
-      const newtime =
-        (res + 0.2)
-          .toString(36)
-          .substr(2)
-          .split('')
-          .reverse()
-          .join('') +
-        (res + 0.9)
-          .toString(36)
-          .substr(2)
-          .split('')
-          .reverse()
-          .join('');
-      return newtime;
-    };
+      return (res + 0.2).toString(36)
+        .substr(2)
+        .split('')
+        .reverse()
+        .join('');
+    }
 
     insertAfter = (newElement, targetElement) => {
       const parent = targetElement.parentNode;
@@ -158,7 +174,7 @@
       } else {
         parent.insertBefore(newElement, targetElement.nextSibling);
       }
-    };
+    }
 
     /**
      * 动态插入js文件
@@ -207,44 +223,66 @@
         );
       };
       _loadScript();
-    };
+    }
 
+    formatResult = (res) => {
+      let urls = [];
+      if (res) {
+        let result = JSON.parse(res);
+        this.results = result;
+        if (result.data) {
+          result = isArray(result.data) ? result.data[0].file : result.data.file;
+          if (isArray(result)) {
+            urls = result;
+          } else if (isObject(result)) {
+            urls = objectValueToArray(result);
+          }
+        } else if (isObject(result)) {
+          urls = objectValueToArray(result);
+        }
+      }
+      return urls;
+    }
 
-    updateFilePath = callback => {
+    updateFilePath = (callback = noop, fail = noop) => {
       const that = this;
-      const { mapPath, staticHost } = that.options;
-      const url = mapPath.indexOf('//') === -1 && staticHost ? staticHost + mapPath : mapPath;
-      that.ajax({
-        url,
-        success: res => {
-          if (res) {
-            let urls = [];
-            let result = JSON.parse(res);
-            if (result.data) {
-              result = isArray(result.data) ? result.data[0].file : result.data.file;
-              if (isArray(result)) {
-                urls = result;
-              } else if (isObject(result)) {
-                urls = objectValuesAsArray(result);
-              }
-            } else if (isObject(result)) {
-              urls = objectValuesAsArray(result);
-            }
+      const { mapPath, cdnMapPath, staticHost } = that.options;
+      let hasLoadError = false;
+      const _getFilePath = (apiPath = mapPath) => {
+        if (hasLoadError) return;
+        if (apiPath === cdnMapPath) hasLoadError = true;
+        const url = apiPath.indexOf('//') === -1 && staticHost ? staticHost + apiPath : apiPath;
+        that.ajax({
+          url,
+          success(res) {
+            const urls = that.formatResult(res);
             if (urls.length) {
-              that.saveFilePaths(urls);
-              callback && callback(urls);
+              // that.saveFilePaths(urls);
+              callback(urls);
             } else {
               throw new Error('No javascript files needed to load?');
             }
+          },
+          fail() {
+            cdnMapPath && _getFilePath(cdnMapPath);
           }
-        }
-      });
-    };
+        });
+      };
+      _getFilePath(mapPath);
+    }
 
-
-    updateLoaderStatus(status = true) {
+    updateLoaderStatus = (status = true) => {
       root[`${this.options.cacheSuffix}__STATUS__`] = status;
       this.loaderStatus = status;
+    }
+
+    doCallback = () => {
+      const that = this;
+      const { options } = that;
+      const res = Object.assign({}, {
+        res: this.results
+      });
+      options.callback(res);
     }
 
     run = callback => {
@@ -252,7 +290,7 @@
       const { options } = that;
 
       if (this.loaderStatus && !options.canReload) {
-        options.callback();
+        that.doCallback();
         return;
       }
       that.updateLoaderStatus();
@@ -261,17 +299,19 @@
       if (paths && paths.data && !options.async) {
         that.loadScripts(paths.data, () => {
           if (paths.expireTime < timeNow) {
-            that.updateFilePath(() => {
-              options.callback();
+            that.updateFilePath((urls) => {
+              that.saveFilePaths(urls);
+              that.doCallback();
             });
           } else {
-            options.callback();
+            that.doCallback();
           }
         });
       } else {
         that.updateFilePath(urls => {
           that.loadScripts(urls, () => {
-            options.callback();
+            that.saveFilePaths(urls);
+            that.doCallback();
           });
         });
       }
