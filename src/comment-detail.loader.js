@@ -13,7 +13,7 @@ function setOptions() {
   return {
     mapPath: `${apiPath}?${apiQuery.join('&')}`,
     cacheSuffix: listId,
-    staticHost: '//image.uc.cn/s/uae/g/1y/'
+    staticHost: '//image1.uc.cn/s/uae/g/1y/'
   };
 }
 
