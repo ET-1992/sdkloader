@@ -10,10 +10,11 @@ function setOptions() {
     '_fetch=1',
     '_size=1'
   ];
+  const protocol = window.location.protocol === 'https:' ? 'https://image.uc.cn' : 'http://image1.uc.cn';
   return {
     mapPath: `${apiPath}?${apiQuery.join('&')}`,
     cacheSuffix: listId,
-    staticHost: '//image1.uc.cn/s/uae/g/1y/'
+    staticHost: `${protocol}/s/uae/g/1y/`
   };
 }
 
